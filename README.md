@@ -15,6 +15,12 @@ https://book.getfoundry.sh/
 
 ## Usage
 
+### Week 6 work
+
+```shell
+$ forge test --match-contract WrappedEther -vvvvv
+```
+
 ### Build
 
 ```shell
