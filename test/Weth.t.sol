@@ -19,7 +19,7 @@ contract WrappedEtherTest is Test, WrappedEtherEvents {
         vm.startPrank(msg.sender);
         //3: deposit 應該要 emit Deposit event
         vm.expectEmit(true, true, false, false);
-        // vm.expectEmit(true, false, false, true, address(wrapped_ether)); 會失敗不知道為什麼
+        //不懂為何噴錯 vm.expectEmit(true, false, false, true, address(wrapped_ether)); 會失敗不知道為什麼
         emit Deposited(msg.sender, msg.value);
 
         wrapped_ether.deposit{value: _amount}();
@@ -51,6 +51,18 @@ contract WrappedEtherTest is Test, WrappedEtherEvents {
         assertEq(wrapped_ether.totalSupply(), totalSupplyBeforeWithdraw - _amount);
         //5: withdraw 應該將 burn 掉的 erc20 換成 ether 轉給 user
         assertEq(address(msg.sender).balance, ETHBeforeWithdraw + _amount);
+
+        vm.stopPrank();
+    }
+
+    function test_withdraw_fail() public payable {
+        uint256 _amount = 1000;
+
+        vm.startPrank(msg.sender);
+        //11: withdraw > user 的balance 應該要 失敗
+        vm.expectRevert();
+        //不懂為何噴錯 vm.expectRevert("ERC20InsufficientBalance(0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38, 0, 1000)");
+        wrapped_ether.withdraw(_amount);
 
         vm.stopPrank();
     }
@@ -111,6 +123,28 @@ contract WrappedEtherTest is Test, WrappedEtherEvents {
 
         //10: transferFrom 後應該要減除用完的 allowance
         assertEq(wrapped_ether.allowance(user1, contract1), _approve_allowance - _transfer_balance);
+        vm.stopPrank();
+    }
+
+    function test_transferFrom_fail() public {
+        uint256 _approve_allowance = 10000;
+        uint256 _transfer_balance = 10000;
+        uint256 _amount = 2000;
+        address user1 = makeAddr('user1');
+        address user2 = makeAddr('user2');
+        address contract1 = makeAddr('contract1');
+
+        vm.startPrank(user1);
+        vm.deal(user1, _amount);
+        wrapped_ether.deposit{value: _amount}();
+        wrapped_ether.approve(address(contract1), _approve_allowance);
+        vm.stopPrank();
+
+        vm.startPrank(contract1);
+        vm.expectRevert();
+        //12: transferFrom > user 的 balance 應該要 失敗
+        wrapped_ether.transferFrom(user1, user2, _transfer_balance);
+
         vm.stopPrank();
     }
 }
