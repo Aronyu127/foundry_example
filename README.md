@@ -21,6 +21,14 @@ https://book.getfoundry.sh/
 $ forge test --match-contract WrappedEther -vvvvv
 ```
 
+### Week 7 work
+
+```shell
+# hw1
+$ forge test --match-contract NFTReceiverTest -vvvvv
+
+```
+
 ### Build
 
 ```shell
