@@ -27,6 +27,9 @@ $ forge test --match-contract WrappedEther -vvvvv
 # hw1
 $ forge test --match-contract NFTReceiverTest -vvvvv
 
+# hw2
+$ forge test --match-contract BlindNftTest -vvvvv
+$ forge test --match-contract RandomTokenNftTest -vvvvv
 ```
 
 ### Build
