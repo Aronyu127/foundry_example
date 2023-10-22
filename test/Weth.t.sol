@@ -18,9 +18,8 @@ contract WrappedEtherTest is Test, WrappedEtherEvents {
         vm.deal(msg.sender, _amount);
         vm.startPrank(msg.sender);
         //3: deposit 應該要 emit Deposit event
-        vm.expectEmit(true, true, false, false);
-        //不懂為何噴錯 vm.expectEmit(true, false, false, true, address(wrapped_ether)); 會失敗不知道為什麼
-        emit Deposited(msg.sender, msg.value);
+        vm.expectEmit(true, true, false, true, address(wrapped_ether));
+        emit Deposited(msg.sender, _amount);
 
         wrapped_ether.deposit{value: _amount}();
         //1: deposit 應該將與 msg.value 相等的 ERC20 token mint 給 user
@@ -60,8 +59,12 @@ contract WrappedEtherTest is Test, WrappedEtherEvents {
 
         vm.startPrank(msg.sender);
         //11: withdraw > user 的balance 應該要 失敗
-        vm.expectRevert();
+        // vm.expectRevert();
         //不懂為何噴錯 vm.expectRevert("ERC20InsufficientBalance(0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38, 0, 1000)");
+        vm.expectRevert();
+            // abi.encodeWithSelector(wrapped_ether.withdraw.selector, 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38, 0, 1000)
+            // abi.encode("ERC20InsufficientBalance(0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38, 0, 1000)")
+        // );
         wrapped_ether.withdraw(_amount);
 
         vm.stopPrank();
